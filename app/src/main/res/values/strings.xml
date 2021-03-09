@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Pacemaker</string>
+
+    <!-- MainFragment -->
+    <string name="today">오늘</string>
+    <string name="calendar">달력</string>
+    <string name="settings">설정</string>
+
+    <!-- fragment_today -->
+    <string name="enter_to_do">할 일을 입력하세요</string>
+</resources>
