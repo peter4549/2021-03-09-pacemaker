@@ -1,24 +1,28 @@
 package com.flow.android.kotlin.pacemaker.model.dao
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.flow.android.kotlin.pacemaker.model.data.ToDo
+import io.reactivex.Completable
 
 @Dao
 interface ToDoDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(toDo: ToDo)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertList(list: List<ToDo>)
+    fun insert(toDo: ToDo): Completable
 
     @Delete
-    suspend fun delete(toDo: ToDo)
+    fun delete(toDo: ToDo): Completable
 
     @Update
-    suspend fun update(toDo: ToDo)
+    fun update(toDo: ToDo): Completable
+
+    @Update
+    suspend fun updateList(list: List<ToDo>)
 
     @Transaction
     @Query("SELECT * from to_do WHERE date_time = :date_time ORDER BY priority DESC")
-    fun getAllByDateTime(date_time: Long): LiveData<List<ToDo>>
+    suspend fun getAllByDateTime(date_time: Long): List<ToDo>
+
+    @Transaction
+    @Query("SELECT COUNT(*) from to_do WHERE date_time = :date_time ORDER BY priority DESC")
+    suspend fun getCountByDateTime(date_time: Long): Int
 }

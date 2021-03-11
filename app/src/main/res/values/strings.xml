@@ -1,11 +1,15 @@
 <resources>
-    <string name="app_name">Pacemaker</string>
+    <string name="app_name" translatable="false">Pacemaker</string>
+
+    <string name="cancel" translatable="false">Cancel</string>
+    <string name="do_not_save" translatable="false">Do not save</string>
+    <string name="save" translatable="false">Save</string>
 
     <!-- MainFragment -->
-    <string name="today">오늘</string>
-    <string name="calendar">달력</string>
-    <string name="settings">설정</string>
+    <string name="today" translatable="false">Today</string>
+    <string name="calendar" translatable="false">Calendar</string>
+    <string name="settings" translatable="false">Settings</string>
 
     <!-- fragment_today -->
-    <string name="enter_to_do">할 일을 입력하세요</string>
+    <string name="enter_to_do" translatable="false">Enter to do</string>
 </resources>
