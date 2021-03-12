@@ -2,8 +2,14 @@
     <string name="app_name" translatable="false">Pacemaker</string>
 
     <string name="cancel" translatable="false">Cancel</string>
+    <string name="delete" translatable="false">Delete</string>
     <string name="do_not_save" translatable="false">Do not save</string>
+    <string name="ok" translatable="false">OK</string>
     <string name="save" translatable="false">Save</string>
+
+    <!-- Notification -->
+    <string name="channel_name" translatable="false">Pacemaker</string>
+    <string name="channel_description" translatable="false">This is the Pacemaker notification channel.</string>
 
     <!-- MainFragment -->
     <string name="today" translatable="false">Today</string>
@@ -11,5 +17,10 @@
     <string name="settings" translatable="false">Settings</string>
 
     <!-- fragment_today -->
-    <string name="enter_to_do" translatable="false">Enter to do</string>
+    <string name="enter_to_do" translatable="false">Enter to-do.</string>
+
+    <!-- TodayFragment -->
+    <string name="delete_to_do_title" translatable="false">Delete to-do</string>
+    <string name="delete_to_do_message" translatable="false">Are you sure you want to delete the to-do?</string>
+    <string name="modify_to_do" translatable="false">Modify to-do</string>
 </resources>

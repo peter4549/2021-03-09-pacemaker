@@ -7,9 +7,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
 import com.flow.android.kotlin.pacemaker.di.scope.ActivityScope
 import com.flow.android.kotlin.pacemaker.di.scope.FragmentScope
+import com.flow.android.kotlin.pacemaker.model.dao.ToDoDao
 import com.flow.android.kotlin.pacemaker.model.database.LocalDatabase
 import com.flow.android.kotlin.pacemaker.repository.Repository
 import com.flow.android.kotlin.pacemaker.view.calendar.CalendarFragment
+import com.flow.android.kotlin.pacemaker.view.dialog_fragment.EditDialogFragment
 import com.flow.android.kotlin.pacemaker.view.main.MainActivity
 import com.flow.android.kotlin.pacemaker.view.settings.SettingsFragment
 import com.flow.android.kotlin.pacemaker.view.today.TodayFragment
@@ -46,6 +48,13 @@ class ApplicationModule {
     ): Repository {
         return Repository(localDatabase)
     }
+
+    @Provides
+    @Singleton
+    internal fun provideToDoDao(localDatabase: LocalDatabase): ToDoDao {
+        return localDatabase.toDoDao()
+    }
+
 }
 
 @Module
@@ -70,6 +79,10 @@ abstract class FragmentModule {
     @FragmentScope
     @ContributesAndroidInjector
     abstract fun todayFragment(): TodayFragment
+
+    @FragmentScope
+    @ContributesAndroidInjector
+    abstract fun editDialogFragment(): EditDialogFragment
 }
 
 @Module abstract class ViewModelFactoryModule {

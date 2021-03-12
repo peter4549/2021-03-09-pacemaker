@@ -23,6 +23,6 @@ interface ToDoDao {
     suspend fun getAllByDateTime(date_time: Long): List<ToDo>
 
     @Transaction
-    @Query("SELECT COUNT(*) from to_do WHERE date_time = :date_time ORDER BY priority DESC")
-    suspend fun getCountByDateTime(date_time: Long): Int
+    @Query("SELECT done from to_do WHERE date_time = :date_time ORDER BY priority DESC")
+    suspend fun getDoneListByDateTime(date_time: Long): List<Boolean>
 }

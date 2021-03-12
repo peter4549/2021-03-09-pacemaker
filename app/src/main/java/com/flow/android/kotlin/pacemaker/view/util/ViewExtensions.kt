@@ -7,6 +7,20 @@ import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.Transformation
 
+fun View.hide(gone: Boolean) {
+    if (gone)
+        this.visibility = View.GONE
+    else
+        this.visibility = View.INVISIBLE
+}
+
+fun View.show() {
+    if (this.visibility == View.VISIBLE)
+        return
+
+    this.visibility = View.VISIBLE
+}
+
 fun View.fadeIn(duration: Number) {
     this.apply {
         alpha = 0F

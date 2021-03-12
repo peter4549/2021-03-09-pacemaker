@@ -1,6 +1,7 @@
 package com.flow.android.kotlin.pacemaker.base
 
 import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +12,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.viewbinding.ViewBinding
+import com.flow.android.kotlin.pacemaker.R
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.android.support.AndroidSupportInjection
 import javax.inject.Inject
 
@@ -48,5 +51,26 @@ abstract class BaseFragment<VM : ViewModel, VB : ViewBinding> : Fragment() {
     override fun onDestroyView() {
         _viewBinding = null
         super.onDestroyView()
+    }
+
+    @Suppress("SameParameterValue")
+    protected fun showMaterialAlertDialog(
+            title: String?,
+            message: String?,
+            neutralButtonText: String?,
+            neutralButtonClickListener: ((DialogInterface?, Int) -> Unit)?,
+            negativeButtonText: String?,
+            negativeButtonClickListener: ((DialogInterface?, Int) -> Unit)?,
+            positiveButtonText: String?,
+            positiveButtonClickListener: ((DialogInterface?, Int) -> Unit)?
+    ) {
+        MaterialAlertDialogBuilder(requireContext(), R.style.MaterialAlertDialog_Rounded)
+                .setTitle(title)
+                .setMessage(message)
+                .setNeutralButton(neutralButtonText, neutralButtonClickListener)
+                .setNegativeButton(negativeButtonText, negativeButtonClickListener)
+                .setPositiveButton(positiveButtonText, positiveButtonClickListener)
+                .setCancelable(true)
+                .show()
     }
 }

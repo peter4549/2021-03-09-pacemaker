@@ -14,7 +14,6 @@ import java.util.*
 fun shareToDo(activity: Activity, toDo: ToDo) {
     val intent = Intent(Intent.ACTION_SEND)
 
-
     val timeZone = Calendar.getInstance().timeZone
     val zoneId = timeZone.toZoneId() ?: ZoneId.systemDefault()
     val localDate = Instant.ofEpochMilli(toDo.dateTime).atZone(ZoneId.systemDefault()).toLocalDate()

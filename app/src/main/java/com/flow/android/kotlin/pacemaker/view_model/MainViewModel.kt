@@ -58,6 +58,14 @@ class MainViewModel @Inject constructor(private val repository: Repository): Vie
     val toDoList: LiveData<List<ToDo>>
         get() = _toDoList
 
+    private val _modifiedToDo = MutableLiveData<ToDo>()
+    val modifiedToDo: LiveData<ToDo>
+        get() = _modifiedToDo
+
+    fun setModifiedToDo(toDo: ToDo) {
+        _modifiedToDo.value = toDo
+    }
+
     init {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
@@ -108,7 +116,7 @@ class MainViewModel @Inject constructor(private val repository: Repository): Vie
         }
     }
 
-    suspend fun getCountByLocalDate(localDate: LocalDate) = repository.toDoDao.getCountByDateTime(localDate.time())
+    suspend fun getDoneListByLocalDate(localDate: LocalDate) = repository.toDoDao.getDoneListByDateTime(localDate.time())
 
     override fun onCleared() {
         compositeDisposable.clear()

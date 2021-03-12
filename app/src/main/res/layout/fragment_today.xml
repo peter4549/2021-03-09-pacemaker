@@ -10,7 +10,7 @@
         android:id="@+id/calendar_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cv_dayViewResource="@layout/day_view"
+        app:cv_dayViewResource="@layout/week_day_view"
         app:cv_hasBoundaries="false"
         app:cv_inDateStyle="none"
         app:cv_maxRowCount="1"
@@ -24,12 +24,14 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/calendar_view" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -40,9 +42,9 @@
             android:id="@+id/edit_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:hint="@string/enter_to_do"
             android:importantForAutofill="no"
             android:inputType="text"
-            android:hint="@string/enter_to_do"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/image_button"
             app:layout_constraintStart_toStartOf="parent"

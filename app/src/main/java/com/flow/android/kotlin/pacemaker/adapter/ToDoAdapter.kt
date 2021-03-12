@@ -1,11 +1,13 @@
 package com.flow.android.kotlin.pacemaker.adapter
 
 import android.annotation.SuppressLint
+import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.MotionEvent
-import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.flow.android.kotlin.pacemaker.R
 import com.flow.android.kotlin.pacemaker.databinding.ItemToDoBinding
 import com.flow.android.kotlin.pacemaker.model.data.ToDo
 import com.flow.android.kotlin.pacemaker.view.util.*
@@ -14,16 +16,19 @@ import kotlin.collections.ArrayList
 
 class ToDoAdapter(private val list: ArrayList<AdapterItem>): RecyclerView.Adapter<ToDoAdapter.ViewHolder>(){
 
-    private val duration = 150L
+    private val duration = 200L
     private var onItemClickListener: OnItemClickListener? = null
     private var recyclerView: RecyclerView? = null
+
+    private var done: Drawable? = null
+    private var keyboardArrowLeft: Drawable? = null
 
     fun setOnItemClickListener(onItemClickListener: OnItemClickListener) {
         this.onItemClickListener = onItemClickListener
     }
 
     interface OnItemClickListener {
-        fun onItemClick(toDo: ToDo)
+        fun onItemClick(viewHolder: ViewHolder, toDo: ToDo)
         fun onImageSwapTouch(viewHolder: ViewHolder)
         fun onImageNotificationsClick(toDo: ToDo)
         fun onImageShareClick(toDo: ToDo)
@@ -51,16 +56,35 @@ class ToDoAdapter(private val list: ArrayList<AdapterItem>): RecyclerView.Adapte
         notifyItemRemoved(position)
     }
 
+    fun modifyItem(item: ToDo) {
+        val adapterItem = list.findLast { it.toDo.id == item.id } ?: return
+        val position = list.indexOf(adapterItem)
+
+        list[position] = AdapterItem(adapterItem.isMenuOpened, item)
+        notifyItemChanged(position)
+    }
+
     fun clear() {
         list.clear()
         notifyDataSetChanged()
     }
 
-    inner class ViewHolder(private val viewBinding: ItemToDoBinding): RecyclerView.ViewHolder(viewBinding.root) {
+    inner class ViewHolder(val viewBinding: ItemToDoBinding): RecyclerView.ViewHolder(viewBinding.root) {
 
         @SuppressLint("ClickableViewAccessibility")
         fun bind(item: AdapterItem) {
             val toDo = item.toDo
+
+            if (done == null)
+                done = ContextCompat.getDrawable(viewBinding.root.context, R.drawable.ic_done_24)
+
+            if (keyboardArrowLeft == null)
+                keyboardArrowLeft = ContextCompat.getDrawable(viewBinding.root.context, R.drawable.ic_keyboard_arrow_left_24)
+
+            if (toDo.done)
+                viewBinding.imageDone.setImageDrawable(done)
+            else
+                viewBinding.imageDone.setImageDrawable(keyboardArrowLeft)
 
             viewBinding.text.text = toDo.content
 
@@ -106,7 +130,7 @@ class ToDoAdapter(private val list: ArrayList<AdapterItem>): RecyclerView.Adapte
             }
 
             viewBinding.cardView.setOnClickListener {
-                onItemClickListener?.onItemClick(toDo)
+                onItemClickListener?.onItemClick(this, toDo)
             }
 
             viewBinding.imageNotifications.setOnClickListener {

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <integer name="viewport_width">24</integer>
+    <integer name="viewport_height">24</integer>
+    <integer name="pivot_x">12</integer>
+    <integer name="pivot_y">12</integer>
+
+    <string name="path_done" translatable="false">
+        M 4.1, 12.7
+        L 9, 17.5
+        M 9, 17.5
+        L 20.3 6.3
+    </string>
+
+    <string name="path_keyboard_arrow_left" translatable="false">
+        M 9.295, 17.295
+        L 14.585, 12
+        M 14.585, 12
+        L 9.295, 6.705
+    </string>
+
+    <integer name="stroke_width">2</integer>
+
+    <string name="done" translatable="false">done</string>
+    <string name="group_done_keyboard_arrow_left" translatable="false">group_done_keyboard_arrow_left</string>
+    <string name="keyboard_arrow_left" translatable="false">keyboard_arrow_left</string>
+
+    <color name="stroke_color">#999</color>
+</resources>

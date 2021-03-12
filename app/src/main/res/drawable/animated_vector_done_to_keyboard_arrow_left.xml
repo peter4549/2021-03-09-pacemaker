@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/ic_done_24">
+
+    <target
+        android:name="@string/done"
+        android:animation="@animator/done_to_keyboard_arrow_left" />
+
+
+    <target
+        android:name="@string/group_done_keyboard_arrow_left"
+        android:animation="@animator/rotate_done_to_keyboard_arrow_left" />
+</animated-vector>

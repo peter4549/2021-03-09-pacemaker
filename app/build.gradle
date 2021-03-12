@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'kotlin-android-extensions'
     id 'kotlin-kapt'
 }
 
@@ -57,6 +58,9 @@ dependencies {
 
     // CalendarView
     implementation 'com.github.kizitonwose:CalendarView:1.0.0'
+
+    // Check View
+    implementation 'com.github.cdflynn:checkview:v1.1'
 
     // CircleProgress
     implementation 'com.github.lzyzsd:circleprogress:1.2.1'

@@ -1,6 +1,10 @@
 package com.flow.android.kotlin.pacemaker.view.today
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
+import android.graphics.drawable.AnimatedVectorDrawable
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
@@ -9,18 +13,28 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.annotation.ColorInt
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.SimpleItemAnimator
 import com.flow.android.kotlin.pacemaker.R
 import com.flow.android.kotlin.pacemaker.adapter.ToDoAdapter
 import com.flow.android.kotlin.pacemaker.adapter.item_touch_helper.Callback
+import com.flow.android.kotlin.pacemaker.application.CHANNEL_ID
+import com.flow.android.kotlin.pacemaker.application.NOTIFICATION_ID
 import com.flow.android.kotlin.pacemaker.base.BaseFragment
-import com.flow.android.kotlin.pacemaker.databinding.DayViewBinding
+import com.flow.android.kotlin.pacemaker.databinding.WeekDayViewBinding
 import com.flow.android.kotlin.pacemaker.databinding.FragmentTodayBinding
 import com.flow.android.kotlin.pacemaker.model.data.ToDo
+import com.flow.android.kotlin.pacemaker.view.dialog_fragment.EditDialogFragment
+import com.flow.android.kotlin.pacemaker.view.util.hide
 import com.flow.android.kotlin.pacemaker.view.util.shareToDo
+import com.flow.android.kotlin.pacemaker.view.util.show
 import com.flow.android.kotlin.pacemaker.view_model.MainViewModel
 import com.kizitonwose.calendarview.model.CalendarDay
 import com.kizitonwose.calendarview.ui.DayBinder
@@ -56,9 +70,9 @@ class TodayFragment: BaseFragment<MainViewModel, FragmentTodayBinding>(), ToDoAd
 
     @ExperimentalCoroutinesApi
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
         val view = super.onCreateView(inflater, container, savedInstanceState)
 
@@ -137,8 +151,15 @@ class TodayFragment: BaseFragment<MainViewModel, FragmentTodayBinding>(), ToDoAd
 
     private fun initializeLiveData() {
         viewModel.toDoList.observe(viewLifecycleOwner, {
+            (viewBinding.recyclerView.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
             toDoAdapter.clear()
             toDoAdapter.addAll(it)
+        })
+
+        viewModel.modifiedToDo.observe(viewLifecycleOwner, { toDo ->
+            toDo?.also {
+                toDoAdapter.modifyItem(it)
+            }
         })
     }
 
@@ -159,7 +180,7 @@ class TodayFragment: BaseFragment<MainViewModel, FragmentTodayBinding>(), ToDoAd
         private val monthFormatter = DateTimeFormatter.ofPattern("M")
 
         lateinit var calendarDay: CalendarDay
-        val dayViewBinding = DayViewBinding.bind(view)
+        val weekDayViewBinding = WeekDayViewBinding.bind(view)
 
         init {
             view.setOnClickListener {
@@ -177,6 +198,8 @@ class TodayFragment: BaseFragment<MainViewModel, FragmentTodayBinding>(), ToDoAd
                 // you would use: exSevenCalendar.smoothScrollToDate(day.date.minusDays(2))
 
                 if (viewModel.selectedDate() != calendarDay.date) {
+                    viewModel.updateToDoList(toDoAdapter.toDoList())
+
                     val previousDate = viewModel.selectedDate()
                     viewModel.setSelectedDate(calendarDay.date)
                     viewBinding.calendarView.notifyDateChanged(calendarDay.date)
@@ -188,24 +211,30 @@ class TodayFragment: BaseFragment<MainViewModel, FragmentTodayBinding>(), ToDoAd
         fun bind(calendarDay: CalendarDay) {
             this.calendarDay = calendarDay
 
-            dayViewBinding.textDayOfMonth.text = dayOfMonthFormatter.format(calendarDay.date)
-            dayViewBinding.textDayOfWeek.text = dayOfWeekFormatter.format(calendarDay.date)
-            dayViewBinding.textMonth.text = monthFormatter.format(calendarDay.date)
+            weekDayViewBinding.textDayOfMonth.text = dayOfMonthFormatter.format(calendarDay.date)
+            weekDayViewBinding.textDayOfWeek.text = dayOfWeekFormatter.format(calendarDay.date)
+            weekDayViewBinding.textMonth.text = monthFormatter.format(calendarDay.date)
 
             // todo. show rate.. use progress.
             //
             launch {
-                val count: Int
+                val doneList: List<Boolean>
 
                 withContext(Dispatchers.IO) {
-                    count = viewModel.getCountByLocalDate(calendarDay.date)
+                    doneList = viewModel.getDoneListByLocalDate(calendarDay.date)
                 }
 
-                dayViewBinding.textMonth.text = count.toString()
+                if (doneList.isNullOrEmpty())
+                    weekDayViewBinding.arcProgress.hide(false)
+                else {
+                    weekDayViewBinding.arcProgress.show()
+                    weekDayViewBinding.arcProgress.max = doneList.count()
+                    weekDayViewBinding.arcProgress.progress = doneList.filter { it }.count()
+                }
             }
 
-            dayViewBinding.textDayOfMonth.setTextColor(textColor())
-            dayViewBinding.viewSelected.isVisible = calendarDay.date == viewModel.selectedDate()
+            weekDayViewBinding.textDayOfMonth.setTextColor(textColor())
+            weekDayViewBinding.viewSelected.isVisible = calendarDay.date == viewModel.selectedDate()
         }
 
         @ColorInt
@@ -217,9 +246,49 @@ class TodayFragment: BaseFragment<MainViewModel, FragmentTodayBinding>(), ToDoAd
         }
     }
 
-    /** ToDoAdapter.OnItemClickListener */
-    override fun onItemClick(toDo: ToDo) {
+    /** Notification */
+    private fun createNotification(toDo: ToDo) {
+        val contentTitle = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(toDo.localDate())
+        val contentText = toDo.content
 
+        val builder = NotificationCompat.Builder(requireContext(), CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_done_24)
+                .setContentTitle(contentTitle)
+                .setContentText(contentText)
+                .setPriority(NotificationCompat.PRIORITY_MIN)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = getString(R.string.channel_name)
+            val description = getString(R.string.channel_description)
+            val importance = NotificationManager.IMPORTANCE_MIN
+            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
+                this.description = description
+            }
+
+            val notificationManager = requireContext().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        with(NotificationManagerCompat.from(requireContext())) {
+            notify(NOTIFICATION_ID, builder.build())
+        }
+    }
+
+    /** ToDoAdapter.OnItemClickListener */
+    override fun onItemClick(viewHolder: ToDoAdapter.ViewHolder, toDo: ToDo) {
+
+        val drawable: AnimatedVectorDrawable?
+
+        if (toDo.done) {
+            drawable = ContextCompat.getDrawable(requireContext(), R.drawable.animated_vector_done_to_keyboard_arrow_left) as? AnimatedVectorDrawable
+            toDo.done = false
+        } else {
+            drawable = ContextCompat.getDrawable(requireContext(), R.drawable.animated_vector_keyboard_arrow_left_to_done) as? AnimatedVectorDrawable
+            toDo.done = true
+        }
+
+        viewHolder.viewBinding.imageDone.setImageDrawable(drawable)
+        drawable?.start()
     }
 
     override fun onImageSwapTouch(viewHolder: ToDoAdapter.ViewHolder) {
@@ -227,7 +296,7 @@ class TodayFragment: BaseFragment<MainViewModel, FragmentTodayBinding>(), ToDoAd
     }
 
     override fun onImageNotificationsClick(toDo: ToDo) {
-
+        createNotification(toDo)
     }
 
     override fun onImageShareClick(toDo: ToDo) {
@@ -235,12 +304,33 @@ class TodayFragment: BaseFragment<MainViewModel, FragmentTodayBinding>(), ToDoAd
     }
 
     override fun onImageEditClick(toDo: ToDo) {
+        val title = getString(R.string.modify_to_do)
 
+        EditDialogFragment().apply {
+            setTitle(title)
+            setToDo(toDo)
+            show(this@TodayFragment.requireActivity().supportFragmentManager, tag)
+        }
     }
 
     override fun onImageDeleteClick(toDo: ToDo) {
-        viewModel.deleteToDo(toDo) {
-            toDoAdapter.remove(toDo)
-        }
+        showMaterialAlertDialog(
+                title = getString(R.string.delete_to_do_title),
+                message = getString(R.string.delete_to_do_message),
+                negativeButtonClickListener = { dialogInterface, _ ->
+                    dialogInterface?.dismiss()
+                },
+                negativeButtonText = getString(R.string.cancel),
+                neutralButtonClickListener = null,
+                neutralButtonText = null,
+                positiveButtonClickListener = { dialogInterface, _ ->
+                    viewModel.deleteToDo(toDo) {
+                        toDoAdapter.remove(toDo)
+                    }
+
+                    dialogInterface?.dismiss()
+                },
+                positiveButtonText = getString(R.string.delete)
+        )
     }
 }

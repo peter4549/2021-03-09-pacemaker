@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="?attr/selectableItemBackground">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -31,7 +32,6 @@
             android:layout_height="40dp"
             android:background="@android:color/transparent"
             android:layout_marginTop="@dimen/spacing_extra_small"
-            app:arc_progress="55"
             app:arc_text_color="@android:color/transparent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
