@@ -1,6 +1,18 @@
 # 2021-03-09-pacemaker
 
 # References
+## [[MaterialAlertDialogBuilder] Rounded corners for AlertDialog pre Android P](https://github.com/material-components/material-components-android/issues/539)
+```
+<style name="MaterialAlertDialog.Rounded" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+    <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.MaterialAlertDialog.Rounded</item>
+</style>
+```
+```
+<style name="ShapeAppearanceOverlay.MaterialAlertDialog.Rounded" parent="">
+    <item name="cornerSize">8dp</item>
+</style>
+```
+
 ## [A summary of the international standard date and time notation](https://www.cl.cam.ac.uk/~mgk25/iso-time.html)
 ## [Convert Calendar date to LocalDate](https://stackoverflow.com/questions/48983572/convert-calendar-date-to-localdate)
 ## [Coroutines on Android (part I): Getting the background](https://medium.com/androiddevelopers/coroutines-on-android-part-i-getting-the-background-3e0e54d20bb)
