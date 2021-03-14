@@ -9,7 +9,7 @@
     <com.kizitonwose.calendarview.CalendarView
         android:id="@+id/calendar_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="80dp"
         app:cv_dayViewResource="@layout/week_day_view"
         app:cv_hasBoundaries="false"
         app:cv_inDateStyle="none"

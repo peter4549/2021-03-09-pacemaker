@@ -19,6 +19,23 @@
     <!-- fragment_today -->
     <string name="enter_to_do" translatable="false">Enter to-do.</string>
 
+    <!-- SettingsFragment -->
+    <string name="font_size" translatable="false">Font Size</string>
+    <string-array name="font_size">
+        <item>12</item>
+        <item>14</item>
+        <item>16</item>
+        <item>18</item>
+        <item>20</item>
+    </string-array>
+
+    <string name="show_on_lock_screen" translatable="false">Show on Lock Screen</string>
+    <string-array name="show_on_lock_screen">
+        <item>Not used</item>
+        <item>Show after unlocking</item>
+        <item>Show on lock screen</item>
+    </string-array>
+
     <!-- TodayFragment -->
     <string name="delete_to_do_title" translatable="false">Delete to-do</string>
     <string name="delete_to_do_message" translatable="false">Are you sure you want to delete the to-do?</string>
